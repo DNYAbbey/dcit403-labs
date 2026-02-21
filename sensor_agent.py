@@ -4,7 +4,7 @@ from datetime import datetime
 from spade.agent import Agent
 from spade.behaviour import CyclicBehaviour
 from environment import DisasterEnvironment
-
+from spade.message import Message
 
 class SensorBehaviour(CyclicBehaviour):
     async def run(self):
@@ -14,6 +14,17 @@ class SensorBehaviour(CyclicBehaviour):
         print(log_entry)
         with open("event_log.txt", "a") as file:
             file.write(log_entry + "\n")
+        await asyncio.sleep(5)
+
+         # -------- NEW PART (Lab 3 & 4) --------
+        msg = Message(to="coordinator_agent1@xmpp.jp")
+        msg.set_metadata("performative", "inform")
+        msg.body = f"Disaster severity {event['severity']}"
+
+
+        await self.send(msg)
+        print(f"[SENT] INFORM -> {event['severity']}")
+
         await asyncio.sleep(5)
 
 
